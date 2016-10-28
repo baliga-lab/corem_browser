@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Corem Browser Test</title>
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="d3.min.js"></script>
+    <script src="corem_browser.js"></script>
+    <script>
+      $(document).ready(function () {
+        corem_browser.init("#browser", { width: 640, height: 400 });
+      });
+    </script>
+    <style>
+      #browser {
+        border: 1px solid black;
+      }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      .axis text {
+        font: 10px sans-serif;
+        color: #000;
+      }
+      .axis-label {
+        font: 10px sans-serif;
+        color: #000;
+      }
+      .line {
+        fill: none;
+        stroke: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Corem Browser Test</h1>
+    <svg id="browser"></svg>
+  </body>
+</html>
