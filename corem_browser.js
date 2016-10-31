@@ -11,36 +11,52 @@ var corem_browser = {};
     var MARGIN_BOTTOM = 20;
     var MARGIN_TOP = 20;
 
+    // module global chart scale, we might want to switch to an instance
+    var xScale = d3.scaleLinear().domain([MIN_X, MAX_X]).range([MIN_X, MAX_X]);
+    var yScale = d3.scaleLinear().domain([MIN_Y, MAX_Y]).range([MAX_Y, MIN_Y]);
+    var xAxis = d3.axisBottom(xScale).ticks(10);
+    var yAxis = d3.axisRight(yScale).ticks(10);
+
+    // just for prototyping
+    var GRE_COUNTS = [{x: 10, y: 0}, {x: 20, y: 30}, {x: 30, y: 50}, {x: 40, y: 70}, {x: 50, y: 0}];
+
+    function baseline(options) { return options.height - MAX_Y - 20; }
+    function yAxisX(options) { return (options.width - (options.width - MAX_X) + MARGIN_LEFT); }
+
     function drawAxes(chart, options) {
-        var hScale = d3.scaleLinear().domain([MIN_X, MAX_X]).range([MIN_X, MAX_X]);
-        var vScale = d3.scaleLinear().domain([MIN_Y, MAX_Y]).range([MAX_Y, MIN_Y]);
-        var xAxis = d3.axisBottom(hScale).ticks(10);
-        var yAxis = d3.axisRight(vScale).ticks(10);
+
         chart.append("g").attr("class", "axis")
-            .attr("transform", "translate(" + MARGIN_LEFT + "," + (options.height - MARGIN_BOTTOM) + ")")
+            //.attr("transform", "translate(" + MARGIN_LEFT + "," + (options.height - MARGIN_BOTTOM) + ")")
             .call(xAxis);
         chart.append("g").attr("class", "axis")
-            .attr("transform", "translate(" + (options.width - (options.width - MAX_X) + MARGIN_LEFT - 40) + "," + (170) + ")")
+            //.attr("transform", "translate(" + yAxisX(options) + "," + baseline(options) + ")")
             .call(yAxis);
+
         chart.append("text")
             .attr("class", "axis-label")
-            .attr("x", -250).attr("y", 600)
+            .attr("x", -150).attr("y", 635)
             .attr("transform", "rotate(-90)")
             .style("text-anchor", "middle")
             .attr("dy", ".1em")
             .text("GRE count");
     }
 
+    function drawCurves(chart, options) {
+        var data = GRE_COUNTS;
+        var line = d3.line()
+            .x(function(d) { return xScale(d.x); })
+            .y(function(d) { return yScale(d.y); })
+            .curve(d3.curveCardinal);
+
+        chart.append("path").datum(data).attr("class", "line").attr("d", line)
+            //.attr('transform', "translate(" + MARGIN_LEFT + "," + baseline(options) + ")")
+            .style('stroke', 'red');
+    }
+
     corem_browser.init = function(selector, options) {
         var chart = d3.select(selector).attr('width', options.width)
             .attr('height', options.height);
         drawAxes(chart, options);
-
-        var data = [{x: 10, y: 200}, {x: 60, y: 220}, {x: 80, y: 180}];
-        var line = d3.line()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; });
-        chart.append("path").datum(data).attr("class", "line").attr("d", line);
-        var path = d3.path();
+        drawCurves(chart, options);
     };
 }());

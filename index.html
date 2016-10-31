@@ -7,10 +7,13 @@
     <script src="corem_browser.js"></script>
     <script>
       $(document).ready(function () {
-        corem_browser.init("#browser", { width: 640, height: 400 });
+        corem_browser.init("#browser", { width: 640, height: 220 });
       });
     </script>
     <style>
+      h1 {
+        font-family: Verdana, Helvetica, sans-serif;
+      }
       #browser {
         border: 1px solid black;
       }
@@ -30,6 +33,7 @@
       .line {
         fill: none;
         stroke: #000;
+        stroke-width: 2;
       }
     </style>
   </head>
