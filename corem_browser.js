@@ -10,6 +10,7 @@ var corem_browser = {};
     var MARGIN_RIGHT = 20;
     var MARGIN_BOTTOM = 20;
     var MARGIN_TOP = 20;
+    var COLORS = ['red', 'green', 'blue', 'cyan', 'magenta', 'orange', 'purple'];
 
     // module global chart scale, we might want to switch to an instance
     var xScale, yScale, xAxis, yAxis;
@@ -41,7 +42,7 @@ var corem_browser = {};
             .style('stroke', color);
     }
 
-    function find_domain(data, initDomain) {
+    function findDomain(data, initDomain) {
         for (var i in data) {
             var d = data[i];
             if (d.pos > initDomain.maxx) initDomain.maxx = d.pos;
@@ -51,30 +52,34 @@ var corem_browser = {};
         return initDomain;
     }
 
+    function initDomain(data) {
+        var domain = {
+            'minx': 1000000, 'maxx': 0,
+            'miny': 0, 'maxy': 0
+        };
+        var gres = Object.keys(data.gres);
+        for (var i in gres) {
+            var gredata = data.gres[gres[i]];
+            domain = findDomain(gredata, domain);
+        }
+        return domain;
+    }
+
     corem_browser.init = function(selector, options) {
+        var url = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
         var chart = d3.select(selector).attr('width', options.width)
             .attr('height', options.height);
-        $.get('http://localhost:5000/api/v1.0.0/gene_gres/Rv0116c', null,
+        $.get(url, null,
               function (data, status, jqxhr) {
                   var gene = data.gene;
                   var gres = Object.keys(data.gres);
 
-                  // initialize domain
-                  var domain = {
-                      'minx': 1000000, 'maxx': 0,
-                      'miny': 0, 'maxy': 0
-                  };
-                  var colors = ['red', 'green', 'blue'];
-
-                  for (var i in gres) {
-                      var gredata = data.gres[gres[i]];
-                      domain = find_domain(gredata, domain);
-                  }
+                  var domain = initDomain(data);
                   drawAxes(chart, options, domain);
 
                   for (var i in gres) {
                       var gredata = data.gres[gres[i]];
-                      drawCurve(chart, options, gredata, colors[i % colors.length]);
+                      drawCurve(chart, options, gredata, COLORS[i % COLORS.length]);
                   }
               }, "json");
     };
