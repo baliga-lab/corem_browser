@@ -12,25 +12,16 @@ var corem_browser = {};
     var MARGIN_TOP = 20;
 
     // module global chart scale, we might want to switch to an instance
-    var xScale = d3.scaleLinear().domain([MIN_X, MAX_X]).range([MIN_X, MAX_X]);
-    var yScale = d3.scaleLinear().domain([MIN_Y, MAX_Y]).range([MAX_Y, MIN_Y]);
-    var xAxis = d3.axisBottom(xScale).ticks(10);
-    var yAxis = d3.axisRight(yScale).ticks(10);
+    var xScale, yScale, xAxis, yAxis;
 
-    // just for prototyping
-    var GRE_COUNTS = [{x: 10, y: 0}, {x: 20, y: 30}, {x: 30, y: 50}, {x: 40, y: 70}, {x: 50, y: 0}];
+    function drawAxes(chart, options, domain) {
+        xScale = d3.scaleLinear().domain([domain.minx - 1, domain.maxx + 1]).range([0, options.width]);
+        yScale = d3.scaleLinear().domain([domain.miny, domain.maxy + 1]).range([options.height, 0]);
+        xAxis = d3.axisBottom(xScale).ticks(10);
+        yAxis = d3.axisRight(yScale).ticks(5);
 
-    function baseline(options) { return options.height - MAX_Y - 20; }
-    function yAxisX(options) { return (options.width - (options.width - MAX_X) + MARGIN_LEFT); }
-
-    function drawAxes(chart, options) {
-
-        chart.append("g").attr("class", "axis")
-            //.attr("transform", "translate(" + MARGIN_LEFT + "," + (options.height - MARGIN_BOTTOM) + ")")
-            .call(xAxis);
-        chart.append("g").attr("class", "axis")
-            //.attr("transform", "translate(" + yAxisX(options) + "," + baseline(options) + ")")
-            .call(yAxis);
+        chart.append("g").attr("class", "axis").call(xAxis);
+        chart.append("g").attr("class", "axis").call(yAxis);
 
         chart.append("text")
             .attr("class", "axis-label")
@@ -41,22 +32,50 @@ var corem_browser = {};
             .text("GRE count");
     }
 
-    function drawCurves(chart, options) {
-        var data = GRE_COUNTS;
+    function drawCurve(chart, options, data, color) {
         var line = d3.line()
-            .x(function(d) { return xScale(d.x); })
-            .y(function(d) { return yScale(d.y); })
-            .curve(d3.curveCardinal);
+            .x(function(d) { return xScale(d.pos); })
+            .y(function(d) { return yScale(d.count); });
 
         chart.append("path").datum(data).attr("class", "line").attr("d", line)
-            //.attr('transform', "translate(" + MARGIN_LEFT + "," + baseline(options) + ")")
-            .style('stroke', 'red');
+            .style('stroke', color);
+    }
+
+    function find_domain(data, initDomain) {
+        for (var i in data) {
+            var d = data[i];
+            if (d.pos > initDomain.maxx) initDomain.maxx = d.pos;
+            if (d.pos < initDomain.minx) initDomain.minx = d.pos;
+            if (d.count > initDomain.maxy) initDomain.maxy = d.count;
+        }
+        return initDomain;
     }
 
     corem_browser.init = function(selector, options) {
         var chart = d3.select(selector).attr('width', options.width)
             .attr('height', options.height);
-        drawAxes(chart, options);
-        drawCurves(chart, options);
+        $.get('http://localhost:5000/api/v1.0.0/gene_gres/Rv0116c', null,
+              function (data, status, jqxhr) {
+                  var gene = data.gene;
+                  var gres = Object.keys(data.gres);
+
+                  // initialize domain
+                  var domain = {
+                      'minx': 1000000, 'maxx': 0,
+                      'miny': 0, 'maxy': 0
+                  };
+                  var colors = ['red', 'green', 'blue'];
+
+                  for (var i in gres) {
+                      var gredata = data.gres[gres[i]];
+                      domain = find_domain(gredata, domain);
+                  }
+                  drawAxes(chart, options, domain);
+
+                  for (var i in gres) {
+                      var gredata = data.gres[gres[i]];
+                      drawCurve(chart, options, gredata, colors[i % colors.length]);
+                  }
+              }, "json");
     };
 }());
