@@ -1,15 +1,8 @@
 var corem_browser = {};
 
 (function () {
-    var MIN_X = 0;
-    var MAX_X = 580;
-    var MIN_Y = 0;
-    var MAX_Y = 200;
 
-    var MARGIN_LEFT = 20;
-    var MARGIN_RIGHT = 20;
-    var MARGIN_BOTTOM = 20;
-    var MARGIN_TOP = 20;
+    var MARGIN = {left: 20, bottom: 20, right: 20, top: 20};
     var COLORS = ['red', 'green', 'blue', 'cyan', 'magenta', 'orange', 'purple'];
 
     // module global chart scale, we might want to switch to an instance
@@ -19,14 +12,18 @@ var corem_browser = {};
         xScale = d3.scaleLinear().domain([domain.minx - 1, domain.maxx + 1]).range([0, options.width]);
         yScale = d3.scaleLinear().domain([domain.miny, domain.maxy + 1]).range([options.height, 0]);
         xAxis = d3.axisBottom(xScale).ticks(10);
-        yAxis = d3.axisRight(yScale).ticks(5);
+        yAxis = d3.axisLeft(yScale).ticks(5);
 
-        chart.append("g").attr("class", "axis").call(xAxis);
-        chart.append("g").attr("class", "axis").call(yAxis);
+        chart.append("g").attr("class", "axis").attr("id", "coremBrowserAxisX")
+            .attr('transform', 'translate(0, ' + options.height + ')')
+            .call(xAxis);
+        chart.append("g").attr("class", "axis").attr("id", "coremBrowserAxisY")
+            .attr('transform', 'translate(' + options.width + ', 0)')
+            .call(yAxis);
 
         chart.append("text")
             .attr("class", "axis-label")
-            .attr("x", -150).attr("y", 635)
+            .attr("x", -(options.height / 2)).attr("y", options.width + MARGIN.right / 2 + 2)
             .attr("transform", "rotate(-90)")
             .style("text-anchor", "middle")
             .attr("dy", ".1em")
@@ -67,8 +64,11 @@ var corem_browser = {};
 
     corem_browser.init = function(selector, options) {
         var url = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
-        var chart = d3.select(selector).attr('width', options.width)
-            .attr('height', options.height);
+        var chart = d3.select(selector).attr('width', options.width + MARGIN.left + MARGIN.right)
+            .attr('height', options.height + MARGIN.bottom + MARGIN.top)
+            .append("g")
+            .attr("transform", "translate(" + MARGIN.left + ", " + MARGIN.top + ")");
+
         $.get(url, null,
               function (data, status, jqxhr) {
                   var gene = data.gene;
