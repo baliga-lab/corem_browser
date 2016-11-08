@@ -62,17 +62,43 @@ var corem_browser = {};
         return domain;
     }
 
+    function makeGREPanel(gres) {
+        var content = '<ul class="gre-panel">';
+        content += '<li><input type="checkbox" id="use_GRE_all">All</li>';
+        for (var i = 0; i < gres.length; i++) {
+            content += '<li style="color: ' + COLORS[i % COLORS.length] + '"><input id="use_' + gres[i] + '" type="checkbox">' + gres[i] + '</li>';
+        }
+        content += '</ul>';
+        $('#gre-panel').html(content);
+    }
+
+    function makeCoremInfoPanel(coremInfos) {
+        if (coremInfos.length == 0) {
+            content = '(no corems found)';
+        } else {
+            var content = '<ul class="corem-panel">';
+            for (var i = 0; i < coremInfos.length; i++) {
+                content += '<li>COREM_' + coremInfos[i].corem_id + '</li>';
+            }
+            content += '</ul>';
+        }
+        $('#corem-panel').html(content);
+    }
+
+
     corem_browser.init = function(selector, options) {
-        var url = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
+        var greURL = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
+        var coremURL = options.apiURL + "/api/v1.0.0/corems_with_gene/" + options.gene;
         var chart = d3.select(selector).attr('width', options.width + MARGIN.left + MARGIN.right)
             .attr('height', options.height + MARGIN.bottom + MARGIN.top)
             .append("g")
             .attr("transform", "translate(" + MARGIN.left + ", " + MARGIN.top + ")");
 
-        $.get(url, null,
+        $.get(greURL, null,
               function (data, status, jqxhr) {
                   var gene = data.gene;
                   var gres = Object.keys(data.gres);
+                  makeGREPanel(gres);
 
                   var domain = initDomain(data);
                   drawAxes(chart, options, domain);
@@ -81,6 +107,11 @@ var corem_browser = {};
                       var gredata = data.gres[gres[i]];
                       drawCurve(chart, options, gredata, COLORS[i % COLORS.length]);
                   }
+              }, "json");
+
+        $.get(coremURL, null,
+              function (data, status, jqxhr) {
+                  makeCoremInfoPanel(data.corem_infos);
               }, "json");
     };
 }());

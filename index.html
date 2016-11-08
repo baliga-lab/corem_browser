@@ -14,6 +14,9 @@
       h1 {
         font-family: Verdana, Helvetica, sans-serif;
       }
+      h3 {
+        font-family: Verdana, Helvetica, sans-serif;
+      }
       #browser {
         border: 1px solid black;
       }
@@ -35,10 +38,21 @@
         stroke: #000;
         stroke-width: 1;
       }
+      .gre-panel {
+        list-style-type: none;
+        //width: 50%;
+        columns: 4;
+        font-family: Verdana, Helvetica, sans-serif;
+        font-size: 8pt;
+      }
     </style>
   </head>
   <body>
     <h1>Corem Browser Test</h1>
+    <h3>Corems</h3>
+    <div id="corem-panel"></div>
+    <h3>GREs</h3>
+    <div id="gre-panel"></div>
     <svg id="browser"></svg>
   </body>
 </html>
