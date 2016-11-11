@@ -7,14 +7,15 @@
     <script src="corem_browser.js"></script>
     <script>
       $(document).ready(function () {
-        corem_browser.init("#browser", { width: 640, height: 220, apiURL: "http://localhost:5000", gene: "Rv0116c" });
+        var coremId = 127;
+        var gene = 'Rv0116c';
+        //var gene = 'Rv1332';
+        $('#gene').html(gene);
+        corem_browser.init("#browser", { width: 640, height: 220, apiURL: "http://localhost:5000", gene: gene });
       });
     </script>
     <style>
-      h1 {
-        font-family: Verdana, Helvetica, sans-serif;
-      }
-      h3 {
+      h1, h2, h3 {
         font-family: Verdana, Helvetica, sans-serif;
       }
       #browser {
@@ -40,15 +41,20 @@
       }
       .gre-panel {
         list-style-type: none;
-        //width: 50%;
         columns: 4;
+        font-family: Verdana, Helvetica, sans-serif;
+        font-size: 8pt;
+      }
+      .corem-panel {
+        list-style-type: none;
+        columns: 3;
         font-family: Verdana, Helvetica, sans-serif;
         font-size: 8pt;
       }
     </style>
   </head>
   <body>
-    <h1>Corem Browser Test</h1>
+    <h2>GREs for Gene <span id="gene"></span></h2>
     <h3>Corems</h3>
     <div id="corem-panel"></div>
     <h3>GREs</h3>
