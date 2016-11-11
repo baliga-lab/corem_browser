@@ -76,10 +76,22 @@ var corem_browser = {};
         $('#gre-panel').html(content);
         $('input[type=checkbox]').change(function(e) {
             var greId = e.target.id.substring(4)
-            var curve = curves[greId];
             var checked = $('#' + e.target.id).is(':checked');
-            // toggle visibility by setting their opacity
-            curve.style('opacity', checked ? 1 : 0);
+            if (greId == 'GRE_all') {
+                $('input[type=checkbox]').each(function(elem) {
+                    var id = $(this)[0].id.substring(4);
+                    if (id != 'GRE_all') {
+                        $(this).prop('checked', checked);
+                        // toggle visibility by setting their opacity
+                        var curve = curves[id];
+                        curve.style('opacity', checked ? 1 : 0);
+                    }
+                });
+            } else {
+                var curve = curves[greId];
+                // toggle visibility by setting their opacity
+                curve.style('opacity', checked ? 1 : 0);
+            }
         });
     }
 
