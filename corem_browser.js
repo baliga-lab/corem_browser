@@ -66,14 +66,14 @@ var corem_browser = {};
         return domain;
     }
 
-    function makeGREPanel(gres) {
+    function makeGREPanel(grePanelSelector, gres) {
         var content = '<ul class="gre-panel">';
         content += '<li><input type="checkbox" id="use_GRE_all">All</li>';
         for (var i = 0; i < gres.length; i++) {
             content += '<li style="color: ' + COLORS[i % COLORS.length] + '"><input id="use_' + gres[i] + '" type="checkbox" checked>' + gres[i] + '</li>';
         }
         content += '</ul>';
-        $('#gre-panel').html(content);
+        $(grePanelSelector).html(content);
         $('input[type=checkbox]').change(function(e) {
             var greId = e.target.id.substring(4)
             var checked = $('#' + e.target.id).is(':checked');
@@ -95,7 +95,7 @@ var corem_browser = {};
         });
     }
 
-    function makeCoremInfoPanel(coremInfos) {
+    function makeCoremInfoPanel(coremPanelSelector, coremInfos) {
         if (coremInfos.length == 0) {
             content = '(no corems found)';
         } else {
@@ -106,14 +106,14 @@ var corem_browser = {};
             }
             content += '</ul>';
         }
-        $('#corem-panel').html(content);
+        $(coremPanelSelector).html(content);
     }
 
 
-    corem_browser.init = function(selector, options) {
+    corem_browser.init = function(svgSelector, grePanelSelector, coremPanelSelector, options) {
         var greURL = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
         var coremURL = options.apiURL + "/api/v1.0.0/corems_with_gene/" + options.gene;
-        var chart = d3.select(selector).attr('width', options.width + MARGIN.left + MARGIN.right)
+        var chart = d3.select(svgSelector).attr('width', options.width + MARGIN.left + MARGIN.right)
             .attr('height', options.height + MARGIN.bottom + MARGIN.top)
             .append("g")
             .attr("transform", "translate(" + MARGIN.left + ", " + MARGIN.top + ")");
@@ -122,7 +122,7 @@ var corem_browser = {};
               function (data, status, jqxhr) {
                   var gene = data.gene;
                   var gres = Object.keys(data.gres);
-                  makeGREPanel(gres);
+                  makeGREPanel(grePanelSelector, gres);
 
                   var domain = initDomain(data);
                   drawAxes(chart, options, domain);
@@ -135,7 +135,7 @@ var corem_browser = {};
 
         $.get(coremURL, null,
               function (data, status, jqxhr) {
-                  makeCoremInfoPanel(data.corem_infos);
+                  makeCoremInfoPanel(coremPanelSelector, data.corem_infos);
               }, "json");
     };
 }());

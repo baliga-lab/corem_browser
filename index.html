@@ -11,47 +11,11 @@
         var gene = 'Rv0116c';
         //var gene = 'Rv1332';
         $('#gene').html(gene);
-        corem_browser.init("#browser", { width: 640, height: 220, apiURL: "http://localhost:5000", gene: gene });
+        corem_browser.init("#browser", "#gre-panel", "#corem-panel",
+                           { width: 640, height: 220, apiURL: "http://localhost:5000", gene: gene });
       });
     </script>
-    <style>
-      h1, h2, h3 {
-        font-family: Verdana, Helvetica, sans-serif;
-      }
-      #browser {
-        border: 1px solid black;
-      }
-      .axis path, .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-      }
-      .axis text {
-        font: 10px sans-serif;
-        color: #000;
-      }
-      .axis-label {
-        font: 10px sans-serif;
-        color: #000;
-      }
-      .line {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1;
-      }
-      .gre-panel {
-        list-style-type: none;
-        columns: 4;
-        font-family: Verdana, Helvetica, sans-serif;
-        font-size: 8pt;
-      }
-      .corem-panel {
-        list-style-type: none;
-        columns: 3;
-        font-family: Verdana, Helvetica, sans-serif;
-        font-size: 8pt;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="corem_browser.css" media="screen" />
   </head>
   <body>
     <h2>GREs for Gene <span id="gene"></span></h2>
