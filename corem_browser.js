@@ -73,15 +73,15 @@ var corem_browser = {};
             content += '<li style="color: ' + COLORS[i % COLORS.length] + '"><input id="use_' + gres[i] + '" type="checkbox" checked>' + gres[i] + '</li>';
         }
         content += '</ul>';
-        $(grePanelSelector).html(content);
-        $('input[type=checkbox]').change(function(e) {
+        jQuery(grePanelSelector).html(content);
+        jQuery('input[type=checkbox]').change(function(e) {
             var greId = e.target.id.substring(4)
-            var checked = $('#' + e.target.id).is(':checked');
+            var checked = jQuery('#' + e.target.id).is(':checked');
             if (greId == 'GRE_all') {
-                $('input[type=checkbox]').each(function(elem) {
-                    var id = $(this)[0].id.substring(4);
+                jQuery('input[type=checkbox]').each(function(elem) {
+                    var id = jQuery(this)[0].id.substring(4);
                     if (id != 'GRE_all') {
-                        $(this).prop('checked', checked);
+                        jQuery(this).prop('checked', checked);
                         // toggle visibility by setting their opacity
                         var curve = curves[id];
                         curve.style('opacity', checked ? 1 : 0);
@@ -106,7 +106,7 @@ var corem_browser = {};
             }
             content += '</ul>';
         }
-        $(coremPanelSelector).html(content);
+        jQuery(coremPanelSelector).html(content);
     }
 
 
@@ -118,7 +118,7 @@ var corem_browser = {};
             .append("g")
             .attr("transform", "translate(" + MARGIN.left + ", " + MARGIN.top + ")");
 
-        $.get(greURL, null,
+        jQuery.get(greURL, null,
               function (data, status, jqxhr) {
                   var gene = data.gene;
                   var gres = Object.keys(data.gres);
@@ -133,7 +133,7 @@ var corem_browser = {};
                   }
               }, "json");
 
-        $.get(coremURL, null,
+        jQuery.get(coremURL, null,
               function (data, status, jqxhr) {
                   makeCoremInfoPanel(coremPanelSelector, data.corem_infos);
               }, "json");
