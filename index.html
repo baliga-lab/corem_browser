@@ -12,8 +12,9 @@
         //var gene = 'Rv1369c';
         //var gene = 'Rv1332';
         $('#gene').html(gene);
-        corem_browser.init("#browser", "#gre-panel", "#corem-panel",
-                           { width: 640, height: 220, apiURL: "http://localhost:5000", gene: gene });
+        corem_browser.init("#browser", "#gre-panel", "#corem-panel", {
+            width: 640, height: 220, apiURL: "http://localhost:5000", gene: gene,
+            minGRECount: 10 });
       });
     </script>
     <link rel="stylesheet" type="text/css" href="corem_browser.css" media="screen" />
