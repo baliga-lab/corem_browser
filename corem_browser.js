@@ -171,6 +171,27 @@ var corem_browser = {};
         jQuery(coremPanelSelector).html(content);
     }
 
+    function drawGeneBar(chart, options, gene) {
+        var genebarHeight = 20;
+        var genebarY = options.height + 25;
+        var genebarX1 = gene.start < gene.stop ? xScale(gene.start) : xScale(gene.stop);
+        var genebarX2 = gene.start < gene.stop ? xScale(gene.stop) : xScale(gene.start);
+        var genebarWidth = Math.abs(genebarX2 - genebarX1);
+
+        chart.append('rect')
+            .attr("x", genebarX1)
+            .attr("y", genebarY)
+            .attr("width", genebarWidth).attr("height", genebarHeight)
+            .style("fill", "orange")
+            .style("stroke", "black")
+            .append("title").text(function(d) { return gene.name + ' (' + gene.start + '-' + gene.stop + ')'; });
+        chart.append("text")
+            .attr("x", genebarX1)
+            .attr("y", genebarY + genebarHeight / 2)
+            .attr("dy", ".35em")
+            .text(options.gene);
+    }
+
     corem_browser.init = function(svgSelector, grePanelSelector, coremPanelSelector, options) {
         var greURL = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
         var coremURL = options.apiURL + "/api/v1.0.0/corems_with_gene/" + options.gene;
@@ -215,25 +236,7 @@ var corem_browser = {};
                           .attr("dy", ".1em")
                           .text("no GREs available");
                   }
-                  var genebarHeight = 20;
-                  var genebarY = options.height + 25;
-                  console.debug("genebarY: " + greMaxValue);
-                  var genebarX1 = gene.start < gene.stop ? xScale(gene.start) : xScale(gene.stop);
-                  var genebarX2 = gene.start < gene.stop ? xScale(gene.stop) : xScale(gene.start);
-                  var genebarWidth = Math.abs(genebarX2 - genebarX1);
-
-                  chart.append('rect')
-                      .attr("x", genebarX1)
-                      .attr("y", genebarY)
-                      .attr("width", genebarWidth).attr("height", genebarHeight)
-                      .style("fill", "orange")
-                      .style("stroke", "black")
-                      .append("title").text(function(d) { return gene.name + ' (' + gene.start + '-' + gene.stop + ')'; });
-                  chart.append("text")
-                      .attr("x", genebarX1)
-                      .attr("y", genebarY + genebarHeight / 2)
-                      .attr("dy", ".35em")
-                      .text(options.gene);
+                  drawGeneBar(chart, options, gene);
 
                   // first time should set visibility
                   minGRECountChanged(initialMinGRECount);
