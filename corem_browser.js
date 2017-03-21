@@ -2,7 +2,8 @@ var corem_browser = {};
 
 (function () {
 
-    var MARGIN = {left: 20, bottom: 50, right: 20, top: 20};
+    var MARGIN = {left: 20, bottom: 60, right: 20, top: 20};
+    var GENEBAR_HEIGHT = 20;
     var COLORS = ['red', 'green', 'blue', 'cyan', 'magenta', 'orange', 'purple',
                   'AquaMarine', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse',
                   'Chocolate', 'Coral', 'CornflowerBlue', 'Crimson', 'DarkBlue', 'DarkCyan',
@@ -172,8 +173,7 @@ var corem_browser = {};
     }
 
     function drawGeneBar(chart, options, gene) {
-        var genebarHeight = 20;
-        var genebarY = options.height + 25;
+        var genebarY = options.height + (MARGIN.bottom - (GENEBAR_HEIGHT + 5));
         var genebarX1 = gene.start < gene.stop ? xScale(gene.start) : xScale(gene.stop);
         var genebarX2 = gene.start < gene.stop ? xScale(gene.stop) : xScale(gene.start);
         var genebarWidth = Math.abs(genebarX2 - genebarX1);
@@ -181,15 +181,24 @@ var corem_browser = {};
         chart.append('rect')
             .attr("x", genebarX1)
             .attr("y", genebarY)
-            .attr("width", genebarWidth).attr("height", genebarHeight)
+            .attr("width", genebarWidth).attr("height", GENEBAR_HEIGHT)
             .style("fill", "orange")
             .style("stroke", "black")
             .append("title").text(function(d) { return gene.name + ' (' + gene.start + '-' + gene.stop + ')'; });
         chart.append("text")
             .attr("x", genebarX1)
-            .attr("y", genebarY + genebarHeight / 2)
+            .attr("y", genebarY + GENEBAR_HEIGHT / 2)
             .attr("dy", ".35em")
             .text(options.gene);
+    }
+
+    function drawTSSSite(chart, options, tss) {
+        var tssX1 = tss.start < tss.stop ? xScale(tss.start) : xScale(tss.stop);
+        var tssX2 = tss.stop > tss.start ? xScale(tss.stop) : xScale(tss.start);
+        var tssY = options.height + (GENEBAR_HEIGHT + 5);
+        chart.append("line").attr("x1", tssX1).attr("y1", tssY).attr("x2", tssX2).attr("y2", tssY)
+            .style("stroke", "green")
+            .append("title").text(function(d) { return 'TSS (' + tss.start + '-' + tss.stop + ')'; });
     }
 
     corem_browser.init = function(svgSelector, grePanelSelector, coremPanelSelector, options) {
@@ -237,6 +246,7 @@ var corem_browser = {};
                           .text("no GREs available");
                   }
                   drawGeneBar(chart, options, gene);
+                  drawTSSSite(chart, options, data.tss);
 
                   // first time should set visibility
                   minGRECountChanged(initialMinGRECount);
