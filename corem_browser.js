@@ -1,6 +1,4 @@
-var corem_browser = {};
-
-(function () {
+(function (glob) {
 
     var MARGIN = {left: 20, bottom: 60, right: 20, top: 20};
     var GENEBAR_HEIGHT = 20;
@@ -223,6 +221,8 @@ var corem_browser = {};
             .append("title").text(function(d) { return 'TSS (' + tss.start + '-' + tss.stop + ')'; });
     }
 
+    var corem_browser = { };
+    corem_browser.version = '0.8.0';
     corem_browser.init = function(svgSelector, grePanelSelector, coremPanelSelector, options) {
         var greURL = options.apiURL + "/api/v1.0.0/gene_gres/" + options.gene;
         var coremURL = options.apiURL + "/api/v1.0.0/corems_with_gene/" + options.gene;
@@ -279,4 +279,10 @@ var corem_browser = {};
                   makeCoremInfoPanel(coremPanelSelector, data.corem_infos);
               }, "json");
     };
-}());
+
+    // These lines needed to support a NPM/ES6 environment, the define() call
+    // is to support RequireJS
+    glob.corem_browser = corem_browser;
+    typeof module != 'undefined' && module.exports ? module.exports = corem_browser : typeof define === "function" && define.amd ? define("corem_browser", [], function () { return corem_browser; }) : glob.corem_browser = corem_browser;
+
+})(typeof window != "undefined" ? window : this);
